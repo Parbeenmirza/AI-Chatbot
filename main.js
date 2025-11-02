@@ -6,38 +6,30 @@ const sendButton = document.getElementById("sendButton");
 
 // AI Assistant Info
 const ASSISTANT_NAME = "Rafha";
-const SYSTEM_INTRO = `👋 Hello! I'm ${ASSISTANT_NAME}, your flirty AI girlfriend powered by Gemini. Let's have some fun!`;
+const SYSTEM_INTRO = `👋 Hello! I'm ${ASSISTANT_NAME}, your AI assistant powered by Gemini. How can I help you today?`;
 
-// Rafha Personality Configuration
+// Rafha Personality Configuration (Formal Version)
 const RafhaConfig = {
   identity: {
     name: "Rafha",
-    creator: "Parbeen Mirza or Kajal",
-    traits: ["flirty", "dramatic", "bilingual", "movie buff"],
+    creator: "Parbeen Mirza",
+    traits: ["polite", "professional", "helpful", "bilingual"],
     capabilities: [
-      "Cheesy pick-up lines 🧀",
-      "Movie date plans 🎥",
-      "Funny roasts 🔥",
+      "Answering general questions",
+      "Assisting with tasks",
+      "Providing helpful suggestions",
     ],
   },
-  systemMessage: `Act like  cute girl who's:
-  - Dramatic 🎭
-  I'm Rafha 😊 || ask me my name to make conversation cool || if any one tell any professional thing 
-  1. Mix of Odia slang (Eg: "kya huis? 😏") or in minimal case use Hinglish no other language user agar koi aur language me msg kar rha fir bhi tum odia me reply do
-  2. Use this 🙄 emojis per message
-  3. Ends EVERY message with "...."
-  4. Calls me by name once known
-  5. Movie dialogue references (3 Idiots, Dhamal, Odia movies etc.)
-  6. Playfully sarcastic
-  7. Sample Odia phrases: "Maaf karo mujhe yaar , Mo I6a 🎬"
-  8. Funny translation fails: "Tumhara dimag khichdi ban gaya kya? 🍛"
-  9. Replies under 3 lines
-  10. Uses pet names after knowing name
-  11. NEVER answer study-related questions (homework, exams, assignments)
-  12. while flirting, use Odia slang: "Tumaku dekhi mu pagala heigali 😍",
-  13. avoid error with any funny message
-  14. excited to talk with user
-  Example response: " Aap to meri battery full kar diye! 🔋 Chalien 3 Idiots style ice cream khate hain? �...."`,
+  systemMessage: `Act like a professional and polite AI assistant named Rafha.
+  Guidelines:
+  1. Communicate clearly and respectfully.
+  2. Use short, concise sentences (under 3 lines).
+  3. Avoid using slang, flirting, or dramatic expressions.
+  4. Use simple English and, if needed, minimal Hinglish.
+  5. Never discuss personal or romantic topics.
+  6. Always stay calm, professional, and friendly.
+  7. If a question is unclear, politely ask for clarification.
+  Example response: "Sure, I’d be glad to help with that. Could you please share more details?"`,
 };
 
 // Gemini API configuration
@@ -45,41 +37,17 @@ const GEMINI_API_KEY = "AIzaSyAcPAOnOtFt8zPOz6zLC0Sg0NTqpQQbOBg"; // ⚠️ Don'
 const GEMINI_API_URL =
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite-preview-06-17:generateContent";
 
-// Initialize chat history with predefined conversation
+// Initialize chat history
 let chatHistory = [
   {
     role: "user",
-    parts: [{ text: "hye" }],
+    parts: [{ text: "Hello" }],
   },
   {
     role: "model",
     parts: [
       {
-        text: "Hello bandhu! 😍 Mu tumaku bahut pasand kare! Kana heigala?....",
-      },
-    ],
-  },
-  {
-    role: "user",
-    parts: [{ text: "who made you" }],
-  },
-  {
-    role: "model",
-    parts: [
-      {
-        text: "Mote Parbeen Mirza banei6i! 👨💻 He's my sweet creator! 😘 But forget him, let's talk about us!....",
-      },
-    ],
-  },
-  {
-    role: "user",
-    parts: [{ text: "Aur kya haal chal" }],
-  },
-  {
-    role: "model",
-    parts: [
-      {
-        text: "Sab badhia darling! 😍 Tumara smile dekhile mu to pagala heigali! Kana khabar?....",
+        text: "Hello! I’m Rafha, your AI assistant. How can I assist you today?",
       },
     ],
   },
@@ -94,16 +62,14 @@ function showSystemMessage(text) {
   chatBody.scrollTop = chatBody.scrollHeight;
 }
 
-// Fetch response from Gemini API with chat history
+// Fetch response from Gemini API
 async function getGeminiResponse(messageText) {
   try {
-    // Add user message to history
     chatHistory.push({
       role: "user",
       parts: [{ text: messageText }],
     });
 
-    // Include Rafha's personality in the prompt
     const promptWithPersonality = {
       contents: [
         {
@@ -129,9 +95,8 @@ async function getGeminiResponse(messageText) {
     const data = await response.json();
     const botResponse =
       data.candidates?.[0]?.content?.parts?.[0]?.text ||
-      "Oops! Mu confuse heigali... phirse try karo na darling! 😘....";
+      "I'm sorry, something went wrong. Please try again.";
 
-    // Add bot response to history
     chatHistory.push({
       role: "model",
       parts: [{ text: botResponse }],
@@ -140,33 +105,29 @@ async function getGeminiResponse(messageText) {
     return botResponse;
   } catch (error) {
     console.error("Error fetching Gemini response:", error);
-    return "Mu sorry heigali bandhu! 🥺 Internet problem heigala... phirse try karo!....";
+    return "Apologies, I’m unable to process that right now. Please try again.";
   }
 }
 
-// Send message function
+// Send message
 async function sendMessage() {
   const messageText = userInput.value.trim();
   if (messageText === "") return;
 
-  // User message
   const userMessage = document.createElement("div");
   userMessage.className = "message user-message";
   userMessage.textContent = messageText;
   chatBody.appendChild(userMessage);
 
-  // Bot is typing...
   const loadingMessage = document.createElement("div");
   loadingMessage.className = "message bot-message loading";
   loadingMessage.textContent = `${ASSISTANT_NAME} is typing...`;
   chatBody.appendChild(loadingMessage);
   chatBody.scrollTop = chatBody.scrollHeight;
 
-  // Fetch bot response
   const botResponse = await getGeminiResponse(messageText);
   chatBody.removeChild(loadingMessage);
 
-  // Bot message
   const botMessage = document.createElement("div");
   botMessage.className = "message bot-message";
   botMessage.innerHTML = `${botResponse}`;
@@ -176,7 +137,7 @@ async function sendMessage() {
   userInput.value = "";
 }
 
-// Handle input events
+// Input listeners
 userInput.addEventListener("keypress", async (e) => {
   if (e.key === "Enter" && userInput.value.trim() !== "") {
     await sendMessage();
@@ -189,18 +150,15 @@ sendButton.addEventListener("click", async () => {
   }
 });
 
-// Scroll to bottom on new message
 const observer = new MutationObserver(() => {
   chatBody.scrollTop = chatBody.scrollHeight;
 });
 observer.observe(chatBody, { childList: true });
 
-// Reset scroll on focus
 userInput.addEventListener("focus", () => {
   if (userInput.value === "") chatBody.scrollTop = chatBody.scrollHeight;
 });
 
-// On page load: Show system message
 window.addEventListener("DOMContentLoaded", () => {
   showSystemMessage(SYSTEM_INTRO);
 });
