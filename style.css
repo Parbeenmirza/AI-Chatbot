@@ -75,7 +75,18 @@ body {
   align-self: flex-start;
   border-bottom-left-radius: 0;
 }
-
+.system-message {
+  max-width: 70%;
+  padding: 10px 15px;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  animation: slideIn 0.3s ease;
+  word-break: break-word;
+  background: #00b7eb;
+  color: white;
+  align-self: flex-start;
+  border-bottom-left-radius: 0;
+}
 .chat-footer {
   padding: 15px;
   border-top: 1px solid rgba(255, 255, 255, 0.2);
